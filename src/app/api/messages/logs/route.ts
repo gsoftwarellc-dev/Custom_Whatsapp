@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   );
 
   type LogEntry = { created_at: string; [key: string]: unknown };
-  const allLogs = (logsResults.flat() as LogEntry[]).sort(
+  const allLogs = (logsResults.flat() as unknown as LogEntry[]).sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 

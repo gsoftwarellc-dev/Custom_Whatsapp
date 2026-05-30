@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     mediaType,
     caption,
     messageType: Object.keys(msgContent)[0] ?? "unknown",
-    sessionId: event.session_id ?? event.sessionId,
+    sessionId: (event.session_id ?? event.sessionId) as string | number | undefined,
     timestamp,
     receivedAt: new Date().toISOString(),
     raw: body,
