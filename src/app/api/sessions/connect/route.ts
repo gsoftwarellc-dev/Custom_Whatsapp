@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { wasenderAdmin } from "@/lib/wasender";
 
 export async function POST(req: NextRequest) {
-  if (!process.env.WASENDER_API_TOKEN) {
+  if (!process.env.WASENDER_API_TOKEN || !wasenderAdmin) {
     return NextResponse.json(
       { error: "Personal Access Token (WASENDER_API_TOKEN) is required to connect sessions." },
       { status: 400 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { wasenderAdmin } from "@/lib/wasender";
 
 export async function GET(req: NextRequest) {
-  if (!process.env.WASENDER_API_TOKEN) {
+  if (!process.env.WASENDER_API_TOKEN || !wasenderAdmin) {
     return NextResponse.json(
       { error: "Personal Access Token required to fetch QR codes." },
       { status: 400 }

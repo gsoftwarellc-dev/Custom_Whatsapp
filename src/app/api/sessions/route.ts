@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import { wasenderAdmin, wasenderSend } from "@/lib/wasender";
 
 export async function GET() {
-  // If we have a PAT, list all sessions from account
-  if (process.env.WASENDER_API_TOKEN) {
+  if (process.env.WASENDER_API_TOKEN && wasenderAdmin) {
     try {
       const result = await wasenderAdmin.getAllWhatsAppSessions();
       return NextResponse.json({ sessions: result.response.data ?? [], source: "pat" });
@@ -13,8 +12,7 @@ export async function GET() {
     }
   }
 
-  // Fallback: check the status of the single configured session key
-  if (process.env.WASENDER_SESSION_API_KEY) {
+  if (process.env.WASENDER_SESSION_API_KEY && wasenderSend) {
     try {
       const result = await wasenderSend.getSessionStatus();
       return NextResponse.json({
