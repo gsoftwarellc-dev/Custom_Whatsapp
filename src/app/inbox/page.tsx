@@ -16,6 +16,7 @@ import {
   Video,
   Smile,
   AlertCircle,
+  CheckCircle,
 } from "lucide-react";
 
 interface InboxMessage {
@@ -50,7 +51,7 @@ export default function InboxPage() {
   const [messages, setMessages] = useState<InboxMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookConfigured, setWebhookConfigured] = useState(false);
 
   const fetchInbox = useCallback(async () => {
     setLoading(true);
@@ -65,8 +66,18 @@ export default function InboxPage() {
 
   useEffect(() => {
     fetchInbox();
-    // Set webhook URL hint based on current origin
-    setWebhookUrl(`${window.location.origin}/api/webhook`);
+
+    // Check if webhook is already configured on any session
+    fetch("/api/sessions")
+      .then((r) => r.json())
+      .then((d) => {
+        const sessions = d.sessions ?? [];
+        const hasWebhook = sessions.some(
+          (s: { webhook_enabled: boolean; webhook_url: string }) =>
+            s.webhook_enabled && s.webhook_url
+        );
+        setWebhookConfigured(hasWebhook);
+      });
 
     // Poll every 10 seconds for new messages
     const interval = setInterval(fetchInbox, 10000);
@@ -118,22 +129,31 @@ export default function InboxPage() {
         </div>
       </div>
 
-      {/* Webhook setup banner */}
-      <div className="flex items-start gap-3 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
-        <AlertCircle className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-        <div className="space-y-1 min-w-0">
-          <p className="text-sm text-yellow-300 font-medium">Webhook setup required to receive messages</p>
-          <p className="text-xs text-yellow-300/70">
-            Go to <strong>WaSenderAPI dashboard → Sessions → [your session] → Webhook</strong> and set the URL to:
-          </p>
-          <code className="block text-xs text-yellow-200 bg-yellow-500/10 px-2 py-1 rounded font-mono break-all">
-            {webhookUrl || "https://your-domain.vercel.app/api/webhook"}
-          </code>
-          <p className="text-xs text-yellow-300/70 mt-1">
-            Enable events: <strong>messages.received</strong>, <strong>messages-personal.received</strong>
+      {/* Webhook status banner */}
+      {webhookConfigured ? (
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/20">
+          <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+          <p className="text-sm text-green-300">
+            Webhook active — incoming messages will appear here automatically.
           </p>
         </div>
-      </div>
+      ) : (
+        <div className="flex items-start gap-3 p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
+          <AlertCircle className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
+          <div className="space-y-1 min-w-0">
+            <p className="text-sm text-yellow-300 font-medium">Webhook setup required to receive messages</p>
+            <p className="text-xs text-yellow-300/70">
+              Go to <strong>WaSenderAPI dashboard → Sessions → [your session] → Webhook</strong> and set the URL to:
+            </p>
+            <code className="block text-xs text-yellow-200 bg-yellow-500/10 px-2 py-1 rounded font-mono break-all">
+              https://custom-whatsapp.vercel.app/api/webhook
+            </code>
+            <p className="text-xs text-yellow-300/70 mt-1">
+              Enable events: <strong>messages.received</strong>, <strong>messages-personal.received</strong>
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-4">
