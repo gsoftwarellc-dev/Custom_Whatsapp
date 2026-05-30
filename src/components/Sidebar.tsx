@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageSquare, Smartphone, Send, BarChart3, Inbox } from "lucide-react";
+import { MessageSquare, Smartphone, Send, BarChart3, Inbox, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const nav = [
   { href: "/", label: "Dashboard", icon: BarChart3 },
   { href: "/sessions", label: "Sessions", icon: Smartphone },
   { href: "/send", label: "Send Message", icon: Send },
+  { href: "/outreach", label: "Safe Outreach", icon: Target },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/messages", label: "Message Log", icon: MessageSquare },
 ];
